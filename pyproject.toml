@@ -1,0 +1,13 @@
+[project]
+name = "ytdlp-music-library-mcp"
+version = "0.1.0"
+description = "A MCP-Server that serves tools related to searching and downloading from Youtube Music, aswell as managing your local music library."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "beets>=2.7.1",
+    "mcp[cli]>=1.26.0",
+    "python-dotenv>=1.2.2",
+    "yt-dlp>=2026.3.3",
+    "ytmusicapi>=1.11.5",
+]
