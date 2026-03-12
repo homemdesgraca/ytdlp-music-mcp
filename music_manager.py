@@ -9,6 +9,7 @@ script_path = Path(__file__).parent.absolute()
 YOUTUBE_ID_LENGTH = 11
 
 #Set your variables on .env
+use_beets = os.getenv('USE_BEETS', 'True').lower() == 'true'
 firefoxprofile = os.getenv('FIREFOX_PROFILE_PATH')
 library_path = os.getenv('LIBRARYPATH')
 
@@ -90,7 +91,8 @@ def download_album(downloadinput):
         return(f"Something went wrong on the backend. Inform the user they need to check their yt-dlp backend. Error: {e}")
     
     #Beets async process
-    subprocess.Popen(f'beet import "{script_path}/temp/{innerpath}/" && rm -rf "{script_path}/temp/{innerpath}"', shell=True)
+    if use_beets:
+        subprocess.Popen(f'beet import "{script_path}/temp/{innerpath}/" && rm -rf "{script_path}/temp/{innerpath}"', shell=True)
 
     return(f"Succesfully downloaded: '{downloadinput}' on the user's library.")
 
