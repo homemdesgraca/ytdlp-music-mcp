@@ -3,14 +3,14 @@
 a _very_ simple and basic MCP server built around [mcp-python-sdk](https://github.com/modelcontextprotocol/python-sdk), [ytmusicapi](https://github.com/sigma67/ytmusicapi), [beets](https://github.com/beetbox/beets), and, _obviously_, [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 
 ## Features
-* Provides tools to a LLM using a MCP server, allowing for: searching and downloading albums/songs off Youtube, aswell as checking your library.
+* Provides tools to a LLM using a MCP server, allowing searching and downloading albums/songs off Youtube, aswell as checking your library.
 * Uses [beets](https://github.com/beetbox/beets) to tag and organize your song library.
   * You **_CAN_** disable beets on your .env file, but it's very recommended not to, as the project as built around it's usage. 
 
 * Music related tools
   * youtubesearch: searches YTMusic for albums or songs; used mainly for obtaining ids
     * Inputs: query (str), nresults (int; number of results) and isAlbum (bool)
-    * Output: dict of search results with name, artist, id and year
+    * Output: dict of search results with name, artist, id and year (only for albums)
   * youtubedownload: downloads an album or song using it's id
     * Input: id (str)
     * Output: status of job and it's job_id.
@@ -31,6 +31,8 @@ Python (>=3.10 works fine)
 mcp-python-sdk
 ytmusicapi
 yt-dlp
+ffmpeg
+python-dotenv
 
 ## Installation
 * Install uv if you don't have it:
@@ -57,17 +59,33 @@ yt-dlp
   | Variable | Required | Description |
   |----------|----------|-------------|
   | `LIBRARYPATH` | Required | Absolute path to your music library (e.g. `/mnt/hdd/Music`) |
-  | `FIREFOX_PROFILE_PATH` | Optional | Firefox profile name, needed* for explicit songs ; Check below for more info |
+  | `FIREFOX_PROFILE_PATH` | Optional | Not recommended; Needs Firefox*; Check below for more info |
   | `USE_BEETS` | Required | `True` recommended, `False` to disable beets |
 
+* **Beets (very important)**
+  * First let beets create a config file for you.
+  ```bash
+  # Run inside ytdlp-music-mcp folder
+  source ./.venv/bin/activate        # Mac/Linux
+  venv\Scripts\activate              # Windows
+  beet config -p # Will output the config's path
+  ```
+  * Edit the config to your liking.
+  * If you're not familiar with beets and/or don't want to bother with the config file, use the "config.yaml" template in this repo. Just make sure to replace "YOUR_LIBRARY_FOLDER" with your actual library folder.
 
 * Cookies
-  * This is **needed** (_sometimes not?_) for downloading explicit songs.
-  * It's strongly recommended that you use Firefox for using cookies, as Chrome seems very limiting, but you can change it on "music_manager.py" (you will need to do some manual work).
+  * Very unreliable.
+  * It's recommended that you use Firefox for using cookies, as Chrome seems very limiting, but you can change it on "music_manager.py" (you will need to do some manual work).
 
   - Step 1: Open Firefox and open "about:profiles"
   - Step 2: Create a new profile and name it whatever you want (e.g. YT-MCP)
   - Step 3: Launch the profile on a new browser.
   - Step 4: Go to Youtube and log into an, _preferably_, throwaway account.
-  - Step 5: Go back to the main Firefox instance and copy
+  - Step 5: Go back to the main Firefox instance and copy the last folder name on your recently created profile (e.g. "gorltjvu.YT-DLP")
+  - Step 6: Add that string into your .env FIREFOX_PROFILE_PATH variable.
 
+ ## Amazing projects ❤️
+- [mcp-python-sdk](https://github.com/modelcontextprotocol/python-sdk)
+- [ytmusicapi](https://github.com/sigma67/ytmusicapi)
+- [beets](https://github.com/beetbox/beets)
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp)
