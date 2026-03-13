@@ -11,9 +11,8 @@ load_dotenv()
 script_path = Path(__file__).parent.absolute()
 port = 8000 #Port which the MCP server will run
 
-#Setting some default values
 job_status = {}
-is_downloading = False
+download_lock = asyncio.Lock()
 
 mcp = FastMCP('YoutubeMCP-Test', json_response=True, host='0.0.0.0')
 
@@ -80,26 +79,20 @@ async def youtubedownload(input: str, ctx: Context) -> str:
         input: Use an album id for albums or just input the direct link sent by the user.
     """
     
-    global is_downloading #Not sure about this yet, multiple downloads at the same time seems unstable.
-
-    #Prevents more than one download at once.
-    if is_downloading == True:
+    if download_lock.locked():
         return "A download is already running, wait for it to finish."
-    
-    is_downloading = True
+
     job_id = ctx.request_id
     job_status[job_id] = "running"
-    
+
     async def run():
-        global is_downloading
-        try:
-            result = await asyncio.to_thread(music_manager.download_album, input)
-            job_status[job_id] = f"Done: {result}"
-        except Exception as e:
-            job_status[job_id] = f"Error: {e}"
-        finally:
-            is_downloading = False
-    
+        async with download_lock:
+            try:
+                result = await asyncio.to_thread(music_manager.download_album, input)
+                job_status[job_id] = f"Done: {result}"
+            except Exception as e:
+                job_status[job_id] = f"Error: {e}"
+
     asyncio.create_task(run())
     return f"Download started with job_id = {job_id}. Use the jobstatus tool to check progress."
 

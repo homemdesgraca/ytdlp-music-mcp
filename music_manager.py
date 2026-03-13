@@ -7,6 +7,8 @@ import time
 from pathlib import Path
 from dotenv import load_dotenv
 
+ytm = ytmusicapi.YTMusic()
+
 load_dotenv()
 script_path = Path(__file__).parent.absolute()
 
@@ -16,13 +18,12 @@ YOUTUBE_ID_LENGTH = 11
 use_beets = os.getenv('USE_BEETS', 'True').lower() == 'true'
 firefoxprofile = os.getenv('FIREFOX_PROFILE_PATH')
 library_path = os.getenv('LIBRARYPATH')
-if library_path == '':
+if not library_path:
     print("Set your library path on the .env file.")
     exit()
 
 #Album Searcher
 def search_album(nameinput: str, nsearch: int, isAlbum: bool):
-    ytm = ytmusicapi.YTMusic()
     
     if isAlbum:
         results = {}
@@ -62,8 +63,8 @@ def download_album(downloadinput):
         innerpath = 'Standalone'
     else:
         link = False
+        innerpath = downloadinput
 
-    innerpath = downloadinput
     tempfolder = f'{script_path}/temp/{innerpath}/'
 
     #Parameters
@@ -118,10 +119,10 @@ def download_album(downloadinput):
         elif 'skipping' in result or 'skip' in result:
             return(f'Beets failed to find a good match to organize the files. Keeping files on "{tempfolder}", inform user.')
         else:
-            time.sleep(3) #Wait needed as beets file transfer might be slow
-            shutil.rmtree(tempfolder)
+            time.sleep(3) #Wait needed as beets file transfer might be slow / This really needs a better solution
+            os.rmdir(tempfolder) #If beets doesn't get to move everything on time, it doesn't delete the folder
             return f"Succesfully downloaded: '{downloadinput}' on the user's library."
-
+    return(f'Succesfully downloaded: "{downloadinput}" on {tempfolder} WITHOUT beets auto library management.')
 
 #Library parsing for tool call
 def librarycheck():
