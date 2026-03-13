@@ -114,7 +114,7 @@ def download_album(downloadinput):
         elif 'skipping' in result or 'skip' in result:
             return(f'Beets failed to find a good match to organize the files. Keeping files on "{tempfolder}", inform user.')
         else:
-            time.sleep(2)
+            time.sleep(3) #Wait needed as beets file transfer might be slow
             os.rmdir(tempfolder)
             return f"Succesfully downloaded: '{downloadinput}' on the user's library."
 
