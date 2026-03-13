@@ -47,7 +47,7 @@ fetchart:
   auto: yes
   sources: [google, coverart, itunes, amazon, lastfm, spotify]
   google_engine:
-  lastfm_key: 'YOUR_LAST_KEY' #Optional
+  lastfm_key: 'YOUR_LASTFM_KEY' #Optional
   enforce_ratio: 30px
   high_resolution: yes
   minwidth: 700

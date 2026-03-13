@@ -9,6 +9,7 @@ import uvicorn
 #Gets the script's absolute path and ENV values
 load_dotenv()
 script_path = Path(__file__).parent.absolute()
+port = 8000 #Port which the MCP server will run
 
 #Setting some default values
 job_status = {}
@@ -112,4 +113,4 @@ def getlibraryalbums():
     return music_manager.librarycheck()
 
 if __name__ == "__main__":
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=port)
