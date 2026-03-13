@@ -109,9 +109,9 @@ def download_album(downloadinput):
         result = (result.stdout + result.stderr).lower()
 
         if 'this album is already in the library!' in result:
+            shutil(tempfolder)
             return f'The album was already present in the library, removed the duplicated files.'
         elif 'skipping' in result or 'skip' in result:
-            shutil(tempfolder)
             return(f'Beets failed to find a good match to organize the files. Keeping files on "{tempfolder}", inform user.')
         else:
             time.sleep(2)
