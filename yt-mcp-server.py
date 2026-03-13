@@ -54,7 +54,7 @@ async def wait(time: int, job_id: str) -> str:
 def youtubesearch(searchinput: str, nresults: int, isAlbum: bool) -> dict:
     """
     Always use this tool to get IDs before downloading.
-    When using this for downloads, prefer searching and right after getting the Id, download.
+    When using this for downloads, prefer searching and, right after getting the id, download.
     Search Youtube Music for an album (or an artist for searching all their albums/songs) and returns a dictionary with the top 5 results of the search, along with the name, artist, year and respective IDs of the projects.
 
     Args:
@@ -71,6 +71,7 @@ async def youtubedownload(input: str, ctx: Context) -> str:
     """
     Downloads an album using it's album id or direct link to the user's music library.
     These can take a while, use the check operations tool to see if something is running.
+    Perform a download right after getting the id from searching.
     Only return to the user after checking the downloads.
 
     Args:

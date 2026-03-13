@@ -3,7 +3,9 @@ import ytmusicapi
 from pathlib import Path
 import subprocess
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 script_path = Path(__file__).parent.absolute()
 
 YOUTUBE_ID_LENGTH = 11
