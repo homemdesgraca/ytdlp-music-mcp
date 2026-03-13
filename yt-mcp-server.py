@@ -37,12 +37,12 @@ def jobstatus(job_id: str) -> str:
     return job_status.get(job_id, 'Unknown job id.')
     
 @mcp.tool()
-async def wait(time: int, job_id: str) -> str:
+async def wait(job_id: str, time: int = 10) -> str:
     """
     Tool useful to wait for another tool call to finish.
     Args:
-        time: Integer in seconds.
         job_id: Id of the job that you're waiting to finish. Max of 60 seconds.
+        time: Integer in seconds.
     """
 
     time = min(time, 60) #60 is a magic number, but it prevents the LLM from waiting more than a minute at once.
@@ -51,11 +51,12 @@ async def wait(time: int, job_id: str) -> str:
     return (f'{time} seconds elapsed. Job {job_id} is {job_status.get(job_id, 'Unknown job id.')}')
 
 @mcp.tool()
-def youtubesearch(searchinput: str, nresults: int, isAlbum: bool) -> dict:
+def youtubesearch(searchinput: str, nresults: int = 5, isAlbum: bool = True) -> dict:
     """
     Always use this tool to get IDs before downloading.
     When using this for downloads, prefer searching and, right after getting the id, download.
     Search Youtube Music for an album (or an artist for searching all their albums/songs) and returns a dictionary with the top 5 results of the search, along with the name, artist, year and respective IDs of the projects.
+    If unspecified, always prefer searching for albums first.
 
     Args:
         searchinput: The name of an album/songs AND/OR artist (e.g. "Ninajirachi" returns all albums/songs related to the artist "Ninajirachi"; "Imaginal Disk" returns the album "Imaginal Disk" by "Magdalena Bay")

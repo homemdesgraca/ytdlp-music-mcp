@@ -1,8 +1,10 @@
 import yt_dlp
 import ytmusicapi
-from pathlib import Path
-import subprocess
 import os
+import shutil
+import subprocess
+import time
+from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -49,8 +51,6 @@ def search_album(nameinput: str, nsearch: int, isAlbum: bool):
 
 #Album Downloader
 def download_album(downloadinput):
-    link = False
-    innerpath = downloadinput
 
     #Direct link handling
     if downloadinput.startswith('http'):
@@ -58,15 +58,21 @@ def download_album(downloadinput):
         url = downloadinput
         innerpath = 'Standalone'
 
+    link = False
+    innerpath = downloadinput
+    tempfolder = f'{script_path}/temp/{innerpath}/'
+
     #Parameters
     ytparams = {
-        "extractor_args": {
-        "youtube": {
-            "player_client": ["web", "android_vr"]
+        'retries': 10,
+        'fragment_retries': 20,
+        'extractor_args': {
+        'youtube': {
+            'player_client': ['web', 'android_vr']
                 }
             },
         'format': 'bestaudio[ext=m4a]/bestaudio',
-        'outtmpl': f'{script_path}/temp/{innerpath}/' + '%(artist)s - %(title)s.%(ext)s',
+        'outtmpl': tempfolder + '%(artist)s - %(title)s.%(ext)s',
         'postprocessors': [
             {
                 'key': 'FFmpegMetadata',
@@ -92,11 +98,25 @@ def download_album(downloadinput):
     except Exception as e:
         return(f"Something went wrong on the backend. Inform the user they need to check their yt-dlp backend. Error: {e}")
     
-    #Beets async process
+    #Run beets process
     if use_beets:
-        subprocess.Popen(f'beet import "{script_path}/temp/{innerpath}/" && rm -rf "{script_path}/temp/{innerpath}"', shell=True)
+        result = subprocess.run(
+        ['beet', 'import', tempfolder],
+        capture_output=True,
+        text=True
+        )
 
-    return(f"Succesfully downloaded: '{downloadinput}' on the user's library.")
+        result = (result.stdout + result.stderr).lower()
+
+        if 'this album is already in the library!' in result:
+            return f'The album was already present in the library, removed the duplicated files.'
+        elif 'skipping' in result or 'skip' in result:
+            shutil(tempfolder)
+            return(f'Beets failed to find a good match to organize the files. Keeping files on "{tempfolder}", inform user.')
+        else:
+            time.sleep(2)
+            os.rmdir(tempfolder)
+            return f"Succesfully downloaded: '{downloadinput}' on the user's library."
 
 
 #Library parsing for tool call
