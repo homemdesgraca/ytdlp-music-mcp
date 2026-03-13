@@ -25,14 +25,28 @@ a _very_ simple and basic MCP server built around [mcp-python-sdk](https://githu
     * Input: job_id (str)
     * Output: status of provided job_id
 
-
 ## Requirements
-Python (>=3.10 works fine)
-mcp-python-sdk
-ytmusicapi
-yt-dlp
-ffmpeg
-python-dotenv
+- Python (>=3.10 works fine)
+- mcp-python-sdk
+- ytmusicapi
+- yt-dlp
+- ffmpeg
+- python-dotenv
+
+## ⚠️ - If you're running this server outside your local computer
+```bash
+# yt-mcp-server.py
+
+app = CORSMiddleware(
+app=mcp.streamable_http_app(),
+allow_origins=["*"],
+allow_methods=["*"],
+allow_headers=["*"],
+allow_credentials=True,
+expose_headers=["Mcp-Session-Id"],
+)
+```
+  - Take a look at **allow_origins=["*"]** and read https://starlette.dev/middleware/ for more information about origins.
 
 ## Installation
 * Install uv if you don't have it:
@@ -89,3 +103,5 @@ python-dotenv
 - [ytmusicapi](https://github.com/sigma67/ytmusicapi)
 - [beets](https://github.com/beetbox/beets)
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+- [ffmpeg](https://github.com/FFmpeg/FFmpeg)
+- [python-dotenv](https://github.com/theskumar/python-dotenv)
