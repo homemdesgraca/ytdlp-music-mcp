@@ -60,8 +60,9 @@ def download_album(downloadinput):
         link = True
         url = downloadinput
         innerpath = 'Standalone'
+    else:
+        link = False
 
-    link = False
     innerpath = downloadinput
     tempfolder = f'{script_path}/temp/{innerpath}/'
 
@@ -112,13 +113,13 @@ def download_album(downloadinput):
         result = (result.stdout + result.stderr).lower()
 
         if 'this album is already in the library!' in result:
-            shutil(tempfolder)
+            shutil.rmtree(tempfolder)
             return f'The album was already present in the library, removed the duplicated files.'
         elif 'skipping' in result or 'skip' in result:
             return(f'Beets failed to find a good match to organize the files. Keeping files on "{tempfolder}", inform user.')
         else:
             time.sleep(3) #Wait needed as beets file transfer might be slow
-            os.rmdir(tempfolder)
+            shutil.rmtree(tempfolder)
             return f"Succesfully downloaded: '{downloadinput}' on the user's library."
 
 
