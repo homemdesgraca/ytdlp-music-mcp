@@ -16,6 +16,9 @@ YOUTUBE_ID_LENGTH = 11
 use_beets = os.getenv('USE_BEETS', 'True').lower() == 'true'
 firefoxprofile = os.getenv('FIREFOX_PROFILE_PATH')
 library_path = os.getenv('LIBRARYPATH')
+if library_path == '':
+    print("Set your library path on the .env file.")
+    exit()
 
 #Album Searcher
 def search_album(nameinput: str, nsearch: int, isAlbum: bool):

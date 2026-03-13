@@ -1,0 +1,54 @@
+directory: 'YOUR_LIBRARY_FOLDER' #e.g. '/mnt/hdd/Music/'
+library: 'YOUR_LIBRARY_FOLDER/musiclibrary.db' #e.g. '/mnt/hdd/Music/musiclibrary.db'
+
+match:
+  strong_rec_thresh: 0.30 
+  medium_rec_thresh: 0.25
+  timid_rec_thresh: 0.45
+
+import:
+  move: yes
+  timid: no
+  quiet: yes
+  none_rec_action: skip
+
+plugins: musicbrainz deezer spotify lyrics fetchart
+
+musicbrainz:
+    host: musicbrainz.org
+    https: no
+    ratelimit: 1
+    ratelimit_interval: 1.0
+    extra_tags: []
+    genres: no
+    genres_tag: genre
+    external_ids:
+        discogs: no
+        bandcamp: no
+        spotify: yes
+        deezer: no
+        beatport: no
+        tidal: yes
+    data_source_mismatch_penalty: 0.0
+    search_limit: 5
+
+lyrics:
+    auto: yes
+    dist_thresh: 0.11
+    fallback: null
+    force: no
+    google_API_key: null
+    google_engine_ID: 009217259823014548361:lndtuqkycfu
+    print: no
+    sources: [lrclib, google]
+    synced: yes
+
+fetchart:
+  auto: yes
+  sources: [google, coverart, itunes, amazon, lastfm, spotify]
+  google_engine:
+  lastfm_key: 'YOUR_LAST_KEY' #Optional
+  enforce_ratio: 30px
+  high_resolution: yes
+  minwidth: 700
+  maxwidth: 1200
