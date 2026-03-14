@@ -14,7 +14,7 @@ port = 8000 #Port which the MCP server will run
 job_status = {}
 download_lock = asyncio.Lock()
 
-mcp = FastMCP('YoutubeMCP-Test', json_response=True, host='0.0.0.0')
+mcp = FastMCP('ytdlp-music-mcp', json_response=True, host='0.0.0.0')
 
 #CORS Proxy (Optional)
 app = CORSMiddleware(
