@@ -57,7 +57,8 @@ def youtubesearch(searchinput: str, nresults: int = 5, isAlbum: bool = True) -> 
     When using this for downloads, prefer searching and, right after getting the id, download.
     Search Youtube Music for an album (or an artist for searching all their albums/songs) and returns a dictionary with the top 5 results of the search, along with the name, artist, year and respective IDs of the projects.
     If unspecified, always prefer searching for albums first.
-
+    When you have problems finding an album, try searching with isAlbum = False for songs.
+    
     Args:
         searchinput: The name of an album/songs AND/OR artist (e.g. "Ninajirachi" returns all albums/songs related to the artist "Ninajirachi"; "Imaginal Disk" returns the album "Imaginal Disk" by "Magdalena Bay")
         nresults: Amount of results.
@@ -78,7 +79,7 @@ async def youtubedownload(input: str, ctx: Context) -> str:
     Args:
         input: Use an album id for albums or just input the direct link sent by the user.
     """
-    
+
     if download_lock.locked():
         return "A download is already running, wait for it to finish."
 
