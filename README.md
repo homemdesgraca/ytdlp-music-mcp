@@ -32,6 +32,7 @@ a _very_ simple and basic MCP server built around [mcp-python-sdk](https://githu
 - yt-dlp
 - ffmpeg
 - python-dotenv
+- uvicorn
 
 ## ⚠️ - If you're running this server outside your local computer
 ```bash

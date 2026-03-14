@@ -1608,6 +1608,7 @@ dependencies = [
     { name = "ffmpeg" },
     { name = "mcp", extra = ["cli"] },
     { name = "python-dotenv" },
+    { name = "uvicorn" },
     { name = "yt-dlp" },
     { name = "ytmusicapi" },
 ]
@@ -1618,6 +1619,7 @@ requires-dist = [
     { name = "ffmpeg", specifier = ">=1.4" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.26.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "uvicorn", specifier = ">=0.41.0" },
     { name = "yt-dlp", specifier = ">=2026.3.3" },
     { name = "ytmusicapi", specifier = ">=1.11.5" },
 ]
