@@ -71,11 +71,6 @@ def download_album(downloadinput):
     ytparams = {
         'retries': 10,
         'fragment_retries': 20,
-        'extractor_args': {
-        'youtube': {
-            'player_client': ['web', 'android_vr']
-                }
-            },
         'format': 'bestaudio[ext=m4a]/bestaudio',
         'outtmpl': tempfolder + '%(artist)s - %(title)s.%(ext)s',
         'postprocessors': [

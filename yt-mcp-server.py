@@ -5,6 +5,7 @@ from pathlib import Path
 import music_manager
 import asyncio
 import uvicorn
+from typing import Union
 
 #Gets the script's absolute path and ENV values
 load_dotenv()
@@ -12,6 +13,7 @@ script_path = Path(__file__).parent.absolute()
 port = 8000 #Port which the MCP server will run
 
 job_status = {}
+job_id = 0
 download_lock = asyncio.Lock()
 
 mcp = FastMCP('ytdlp-music-mcp', json_response=True, host='0.0.0.0')
@@ -27,75 +29,76 @@ app = CORSMiddleware(
 )
 
 @mcp.tool()
-def jobstatus(job_id: str) -> str:
+def jobstatus(job_id: Union[str, int]) -> str:
     """
-    Use this tool to get the status of an another tool call.
+    Use this tool to check the status of another tool call.
     Args:
         job_id: The job_id of an tool call.
     """
 
-    return job_status.get(job_id, 'Unknown job id.')
-    
-@mcp.tool()
-async def wait(job_id: str, time: int = 10) -> str:
-    """
-    Tool useful to wait for another tool call to finish.
-    Args:
-        job_id: Id of the job that you're waiting to finish. Max of 60 seconds.
-        time: Integer in seconds.
-    """
+    job_id = int(job_id)
+    job_result = job_status.get(job_id, 'Unknown job id.')
 
-    time = min(time, 60) #60 is a magic number, but it prevents the LLM from waiting more than a minute at once.
-
-    await asyncio.sleep(time)
-    return (f'{time} seconds elapsed. Job {job_id} is {job_status.get(job_id, 'Unknown job id.')}')
+    return f"The job {job_id} is {job_result}. Inform the user."
 
 @mcp.tool()
-def youtubesearch(searchinput: str, nresults: int = 5, isAlbum: bool = True) -> dict:
+def youtubesearch(searchinput: Union[int, str], nresults: Union[int, str] = 5, isAlbum: Union[bool, str] = True) -> dict:
     """
     Always use this tool to get IDs before downloading.
     When using this for downloads, prefer searching and, right after getting the id, download.
     Search Youtube Music for an album (or an artist for searching all their albums/songs) and returns a dictionary with the top 5 results of the search, along with the name, artist, year and respective IDs of the projects.
     If unspecified, always prefer searching for albums first.
-    When you have problems finding an album, try searching with isAlbum = False for songs.
+    When you have problems finding an album, try searching with isAlbum = "false" for songs.
     
     Args:
         searchinput: The name of an album/songs AND/OR artist (e.g. "Ninajirachi" returns all albums/songs related to the artist "Ninajirachi"; "Imaginal Disk" returns the album "Imaginal Disk" by "Magdalena Bay")
         nresults: Amount of results.
-        isAlbum: If the project is an album or not.
+        isAlbum: If "true", searches for albums. If "false", searches for individual songs. When you have problems finding an album, try searching with isAlbum = "false" for songs.
     """
 
+    searchinput = str(searchinput)
+    nresults = int(nresults)
+    isAlbum = str(isAlbum).lower() == "true"
+    
     search = music_manager.search_album(searchinput, nresults, isAlbum)
     return search
 
 @mcp.tool()
-async def youtubedownload(input: str, ctx: Context) -> str:
+async def youtubedownload(input: Union[str, int]) -> str:
     """
     Downloads an album using it's album id or direct link to the user's music library.
-    These can take a while, use the check operations tool to see if something is running.
     Perform a download right after getting the id from searching.
-    Only return to the user after checking the downloads.
+    If you need to download multiple albums, check adding it to the queue.
 
     Args:
         input: Use an album id for albums or just input the direct link sent by the user.
     """
 
-    if download_lock.locked():
-        return "A download is already running, wait for it to finish."
+    global job_id
 
-    job_id = ctx.request_id
-    job_status[job_id] = "running"
+    job_id += 1
+    current_job_id = job_id
+    job_status[current_job_id] = {
+        'input_value': str(input),
+        'status': 'queue'
+    }
 
-    async def run():
-        async with download_lock:
-            try:
-                result = await asyncio.to_thread(music_manager.download_album, input)
-                job_status[job_id] = f"Done: {result}"
-            except Exception as e:
-                job_status[job_id] = f"Error: {e}"
+    asyncio.create_task(process_download(current_job_id))
 
-    asyncio.create_task(run())
-    return f"Download started with job_id = {job_id}. Use the jobstatus tool to check progress."
+    return f"Download queued with job_id = {current_job_id}."
+
+async def process_download(job_id_to_run: int):
+    async with download_lock:
+        entry = job_status[job_id_to_run]
+        entry['status'] = 'running'
+        try:
+            result = await asyncio.to_thread(
+                music_manager.download_album,
+                entry['input_value']
+            )
+            entry['status'] = f"done: {result}"
+        except Exception as e:
+            entry['status'] = f"error: {e}"
 
 @mcp.tool()
 def getlibraryalbums():
